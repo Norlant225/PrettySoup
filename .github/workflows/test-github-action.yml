@@ -26,6 +26,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
 
+      # récupérer code source sur branch dans machine (runner) fournie par GitHub
+      # use = action prédéfinie fournie par GitHub
+      - name: Checkout
+        uses: actions/checkout@v4
+
       # - : nouvel objet
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -35,21 +40,16 @@ jobs:
           cache: 'maven'          # maven > gradle
           # optionnel si pom.xml pas à la racine projet
           # cache-dependency-path: 'sub-project/pom.xml'
-      
-      # récupérer code source sur branch dans machine (runner) fournie par GitHub
-      # use = action prédéfinie fournie par GitHub
-      - name: Checkout
-      uses: actions/checkout@v4
 
       # - name: Test with Maven
-      # -B : permet de passer interactions
-      # run: mvn -B clean test --file pom.xml
+        # -B : permet de passer interactions
+        # run: mvn -B clean test --file pom.xml
       
       - name: Build with Maven
-      run: mvn -B package --file pom.xml -DskipTests
+        run: mvn -B package --file pom.xml -DskipTests
 
       - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
         # inclut le logout
@@ -62,9 +62,9 @@ jobs:
           password: ${{ secrets.DOCKER_API_KEY }}
       
       - name: Build and push
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        file: Dockerfile
-        push: true
-        tags: rg.fr-par.scw.cloud/polytech2024/mm--c/back-java:v0.1
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: rg.fr-par.scw.cloud/polytech2024/mm--c/back-java:v0.1
